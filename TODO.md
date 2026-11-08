@@ -4,7 +4,7 @@ Tracked separately from the issue tracker so we don't lose context on intentiona
 
 ---
 
-## Non-EVM address validation is hardcoded to Solana and Sui
+## Non-EVM address validation is hardcoded to Solana, Stellar, and Sui
 
 **File:** [`.github/scripts/apply-token.mjs`](./.github/scripts/apply-token.mjs) (`NON_EVM_CHAIN_IDS` constant)
 
@@ -12,7 +12,9 @@ Tracked separately from the issue tracker so we don't lose context on intentiona
 The `/add-token` automation validates that the partner-supplied address looks like an EVM address (`0x` + 40 hex) unless the chain is on a small allowlist of known non-EVM chains:
 
 ```js
-const NON_EVM_CHAIN_IDS = new Set([1151111081099710 /* SOL */, 9270000000000000 /* SUI */])
+const NON_EVM_CHAIN_IDS = new Set([
+  1151111081099710 /* SOL */, 1201081091099710 /* XLM */, 9270000000000000 /* SUI */,
+])
 ```
 
 **Why it's a limitation:**

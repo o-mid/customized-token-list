@@ -54,6 +54,7 @@ const TOKENS_DIR = resolve(REPO_ROOT, 'tokens');
 // with a self-derived check.
 const NON_EVM_CHAIN_IDS = new Set([
   1151111081099710 /* SOL */,
+  1201081091099710 /* XLM */,
   9270000000000000 /* SUI */,
 ]);
 
