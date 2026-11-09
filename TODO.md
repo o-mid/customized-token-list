@@ -4,15 +4,17 @@ Tracked separately from the issue tracker so we don't lose context on intentiona
 
 ---
 
-## Non-EVM address validation is hardcoded to Solana and Sui
+## Non-EVM address validation is a hardcoded set
 
-**File:** [`.github/scripts/apply-token.mjs`](./.github/scripts/apply-token.mjs) (`NON_EVM_CHAIN_IDS` constant)
+**Files:** [`.github/scripts/apply-token.mjs`](./.github/scripts/apply-token.mjs) and [`.github/scripts/apply-deny-token.mjs`](./.github/scripts/apply-deny-token.mjs) (`NON_EVM_CHAIN_IDS` constant)
 
 **What's there today:**
-The `/add-token` automation validates that the partner-supplied address looks like an EVM address (`0x` + 40 hex) unless the chain is on a small allowlist of known non-EVM chains:
+The `/add-token` and `/deny-token` automation validates that the partner-supplied address looks like an EVM address (`0x` + 40 hex) unless the chain is on a small allowlist of known non-EVM chains. Stellar is already in the repo (`tokens/XLM.json`, chain id `1201081091099710`), so it is on that list:
 
 ```js
-const NON_EVM_CHAIN_IDS = new Set([1151111081099710 /* SOL */, 9270000000000000 /* SUI */])
+const NON_EVM_CHAIN_IDS = new Set([
+  1151111081099710 /* SOL */, 1201081091099710 /* XLM */, 9270000000000000 /* SUI */,
+])
 ```
 
 **Why it's a limitation:**
