@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import { spawnSync } from 'node:child_process'
 import { describe, expect, it } from 'vitest'
 import { reduceTokens } from './utils'
 import { Token } from './type'
@@ -80,16 +80,36 @@ describe('built token list', () => {
     expect(pall.map((token) => token.symbol)).toEqual(['PALLon'])
   })
 
-  it('accepts Stellar addresses in apply-token and apply-deny-token', () => {
-    for (const file of [
-      '.github/scripts/apply-token.mjs',
-      '.github/scripts/apply-deny-token.mjs',
-    ]) {
-      expect(fs.readFileSync(file, 'utf8')).toContain('1201081091099710 /* XLM */')
-    }
+  it('accepts a Stellar strkey in apply-token instead of rejecting it as an EVM address', () => {
     const stellar = tokens.filter((token) => token.chainId === 1201081091099710)
     expect(stellar.length).toBeGreaterThan(0)
     expect(stellar.every((token) => !/^0x[0-9a-fA-F]{40}$/.test(token.address))).toBe(true)
+
+    const existing = stellar[0]
+    const payload = {
+      partner: 'test',
+      contact: 'test',
+      justification: 'test',
+      tokens: [
+        {
+          chainId: existing.chainId,
+          address: existing.address,
+          symbol: existing.symbol,
+          name: existing.name,
+          decimals: existing.decimals,
+          logoURI: existing.logoURI,
+        },
+      ],
+      parseErrors: [],
+    }
+    const result = spawnSync(process.execPath, ['.github/scripts/apply-token.mjs'], {
+      env: { ...process.env, PAYLOAD: JSON.stringify(payload) },
+      encoding: 'utf8',
+    })
+    const output = `${result.stdout}\n${result.stderr}`
+    expect(result.status).toBe(1)
+    expect(output).toContain('already in tokens/XLM.json')
+    expect(output).not.toContain('not a valid EVM address')
   })
 
   it('fails the image check when any logo is missing', () => {
